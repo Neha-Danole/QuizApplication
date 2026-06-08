@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corporate Assessment Placement Portal</title>
+    
+    <style>
+        /* ==========================================================================
+           LOCKED THEME: STARK CRIMSON & PITCH BLACK SYSTEM
+           ========================================================================== */
+        :root {
+            --primary: #ef4444; /* Vivid Crimson Red */
+            --primary2: #b91c1c; /* Deep Wine Burgundy */
+            --bg1: #000000; /* Pure Pitch Black Canvas */
+            --bg2: #0a0a0a; /* Deep Charcoal Shadow */
+            --card: rgba(18, 18, 18, 0.8); /* Translucent Matte Charcoal Glass */
+            --stroke: rgba(239, 68, 68, 0.2); /* Crimson Outer Ring Glow */
+            --text: #ffffff; /* Stark White Text */
+            --muted: #a3a3a3; /* Medium Neutral Gray */
+            --success: #22c55e; /* Vibrant Emerald Success Accent */
+            --accent-blue: #3b82f6;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: "Inter", system-ui, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--text);
+            background: radial-gradient(circle at top left, #450a0a, transparent 35%),
+                        radial-gradient(circle at bottom right, #171717, transparent 40%),
+                        linear-gradient(180deg, var(--bg1), var(--bg2));
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.1), transparent 65%);
+            filter: blur(80px);
+            top: -100px;
+            left: -100px;
+            animation: float 7s ease-in-out infinite alternate;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            from { transform: translateY(0px) scale(0.95); }
+            to { transform: translateY(35px) scale(1.05); }
+        }
+
+        .quiz-container {
+            width: 100%;
+            max-width: 680px;
+            padding: 40px;
+            border-radius: 24px;
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--stroke);
+            box-shadow: 0 25px 65px rgba(0, 0, 0, 0.85);
+            position: relative;
+            z-index: 2;
+        }
+
+        .hidden { display: none !important; }
+
+        h1 {
+            text-align: center;
+            font-size: 34px;
+            margin: 0;
+            font-weight: 800;
+            background: linear-gradient(90deg, #ffffff, var(--primary), #fca5a5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--muted);
+            margin-top: 10px;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .category-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .menu-btn {
+            width: 100%;
+            padding: 18px 22px;
+            border-radius: 14px;
+            border: 1px solid var(--stroke);
+            background: rgba(255, 255, 255, 0.01);
+            color: var(--text);
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-3px);
+            background: rgba(239, 68, 68, 0.04);
+            border-color: var(--primary);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.1);
+        }
+
+        .menu-btn.selected {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .instruction-box {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--stroke);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+
+        .instruction-box h3 {
+            margin-top: 0;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+        }
+
+        .instruction-list {
+            padding-left: 20px;
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .instruction-list li { margin-bottom: 10px; }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--muted);
+        }
+
+        #timer {
+            background: rgba(59, 130, 246, 0.15);
+            color: #93c5fd;
+            padding: 4px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        #question-text {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 25px 0;
+            line-height: 1.4;
+        }
+
+        .option-btn {
+            width: 100%;
+            text-align: left;
+            padding: 16px;
+            margin: 12px 0;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--stroke);
+            color: var(--text);
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            transform: translateX(5px);
+            border-color: var(--primary);
+            background: rgba(239, 68, 68, 0.03);
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(135deg, var(--primary), var(--primary2));
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.25);
+        }
+
+        .progress-container {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            transition: width 0.4s ease;
+        }
+
+        .nav-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 30px;
+        }
+
+        .action-btn {
+            padding: 14px 24px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+
+        #next-btn, #continue-btn {
+            background: linear-gradient(90deg, var(--primary), var(--primary2));
+            color: white;
+            flex: 1;
+        }
+        
+        #next-btn:hover, #continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        #exit-btn, #back-btn, #back-to-menu-btn, #prev-btn {
+            background: transparent;
+            border: 1px solid var(--stroke);
+            color: var(--muted);
+        }
+
+        #exit-btn:hover, #back-btn:hover, #back-to-menu-btn:hover, #prev-btn:hover { 
+            background: rgba(239, 68, 68, 0.1); 
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+
+        .results-card { text-align: center; }
+        .success-icon-wrap { color: var(--success); margin-bottom: 20px; }
+
+        .score-badge {
+            display: inline-block;
+            padding: 14px 28px;
+            border-radius: 999px;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            font-size: 22px;
+            font-weight: 800;
+            color: #4ade80;
+            margin: 10px 0 20px 0;
+        }
+
+        .time-analysis-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--stroke);
+            border-radius: 14px;
+            padding: 16px;
+            margin: 15px 0;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .time-headline { font-weight: 700; color: #93c5fd; margin-bottom: 6px; }
+
+        .input-group { margin: 20px 0; display: flex; gap: 10px; justify-content: center; }
+        .input-group input { background: rgba(0, 0, 0, 0.5); border: 1px solid var(--stroke); padding: 12px 16px; border-radius: 10px; color: #ffffff; outline: none; flex: 1; max-width: 280px; }
+        .input-group input:focus { border-color: var(--primary); }
+        .save-btn { background: var(--success); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; }
+
+        .leaderboard-box { background: rgba(0, 0, 0, 0.3); border: 1px solid var(--stroke); border-radius: 14px; padding: 20px; margin-top: 25px; text-align: left; }
+        .leaderboard-list { list-style: none; padding: 0; margin: 0; }
+        .leaderboard-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 14px; }
+        
+        .action-menu-btn { width: 100%; padding: 16px; border-radius: 12px; border: none; background: linear-gradient(90deg, var(--primary), var(--primary2)); color: white; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <!-- Dashboard Menu -->
+        <div id="menu-screen">
+            <h1>Placement Prep Portal</h1>
+            <p class="subtitle">Select an assessment track to begin practicing</p>
+            <div class="category-grid">
+                <button class="menu-btn" onclick="showTrackSelection('quantitative')"><span>Quantitative Aptitude</span><span>&rarr;</span></button>
+                <button class="menu-btn" onclick="showTrackSelection('logicalReasoning')"><span>Logical Reasoning</span><span>&rarr;</span></button>
+                <button class="menu-btn" onclick="showTrackSelection('verbalAbility')"><span>Verbal Ability</span><span>&rarr;</span></button>
+            </div>
+        </div>
+
+        <!-- Tracks Selection -->
+        <div id="tracks-screen" class="hidden">
+            <h1 id="tracks-title">Select Focus Track</h1>
+            <p class="subtitle">Choose an isolated subcategory module or challenge the full pool deck</p>
+            <div id="dynamic-sub-container" class="category-grid"></div>
+            <div class="nav-actions">
+                <button id="back-to-menu-btn" class="action-btn" onclick="showMenu()">Main Dashboard</button>
+                <button id="continue-btn" class="action-btn" onclick="goToInstructions()">Continue to Rules</button>
+            </div>
+        </div>
+
+        <!-- Instructions Screen -->
+        <div id="instructions-screen" class="hidden">
+            <h1 id="instructions-title">Assessment Rules</h1>
+            <div class="instruction-box">
+                <h3>Test Regulations:</h3>
+                <ul class="instruction-list">
+                    <li>This module matches custom parameter arrays up to <strong>100 tracked questions</strong>.</li>
+                    <li>Each isolated question runtime tracks individual <strong>Stopwatch Speeds</strong>.</li>
+                    <li>Each correct answer yields +1 score capacity.</li>
+                    <li>Do not refresh or exit the browser runtime.</li>
+                </ul>
+            </div>
+            <div class="nav-actions">
+                <button id="back-btn" class="action-btn" onclick="returnToTracks()">Change Track</button>
+                <button id="start-btn" class="action-btn" onclick="initiateActiveQuiz()" style="background: var(--success); color: white; flex-grow: 1;">Accept & Start Test</button>
+            </div>
+        </div>
+
+        <!-- Active Quiz Screen -->
+        <div id="quiz-screen" class="hidden">
+            <div class="quiz-header">
+                <span id="category-title">Category</span>
+                <span id="timer">Time: 0s</span>
+            </div>
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <div id="question-box">
+                <div id="question-text">Loading question allocation...</div>
+                <div id="options-container"></div>
+            </div>
+            <div class="nav-actions">
+                <button id="exit-btn" class="action-btn" onclick="exitQuiz()">Exit</button>
+                <div style="display: flex; gap: 10px; flex: 1;">
+                    <button id="prev-btn" class="action-btn" onclick="previousQuestion()" style="display: none; width: 50%;">Previous</button>
+                    <button id="next-btn" class="action-btn" onclick="handleNextClick()" style="flex: 1;">Save & Next</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="hidden results-card">
+            <h1>Evaluation Complete</h1>
+            <div class="score-badge">Score: <span id="final-score">0</span> / <span id="total-questions">0</span></div>
+            <div class="time-analysis-box">
+                <div class="time-headline">⏱️ Time Metrics Allocation:</div>
+                <div id="total-time-display">Total Duration: 0s</div>
+            </div>
+            <div id="save-score-area" class="input-group">
+                <input type="text" id="username" placeholder="Enter name for ranking...">
+                <button class="save-btn" onclick="saveLeaderboardData()">Save</button>
+            </div>
+            <div class="leaderboard-box">
+                <h4>Top Track Records</h4>
+                <ul id="leaderboard-list" class="leaderboard-list"></ul>
+            </div>
+            <button class="action-menu-btn" onclick="showMenu()">Return to Dashboard</button>
+        </div>
+    </div>
+
+    <script src="questions.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
